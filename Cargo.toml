@@ -1,0 +1,11 @@
+[workspace]
+resolver = "3"
+members = ["array-add-gpu"]
+
+[package]
+name = "android-gpu-demos-lib"
+version = "0.1.0"
+edition = "2024"
+build = "build.rs"
+
+[dependencies]

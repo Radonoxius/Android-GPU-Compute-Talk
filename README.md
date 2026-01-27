@@ -14,4 +14,9 @@ However, if you want to build/compile this project on your machine, youll need:
 + Linux or MacOS
 + GNU Make
 + Android NDK (LTS version)
-+ Rust (2024 edition) and Cargo
++ `clang`, `llvm-ar`, `lld`, `rustc` (2024 edition) and `cargo`
+
+Just run the following to build everything:
+```
+make
+```

@@ -1,0 +1,23 @@
+[alias]
+b = "build --all"
+br = "build --release --all"
+r = "run -p"
+rr = "run --release -p"
+
+[build]
+target = "aarch64-linux-android"
+
+[target.aarch64-linux-android]
+linker = "clang"
+rustflags = [
+    "-C", "link-arg=-fuse-ld=lld",
+    "-C", "link-arg=--target=aarch64-linux-android30",
+
+    "-C", "link-args=-fPIC -fdata-sections -ffunction-sections",
+    "-C", "link-args=-funwind-tables -fstack-protector-strong",
+    "-C", "link-args=-no-canonical-prefixes -fvisibility=hidden",
+    "-C", "link-args=-fvisibility-inlines-hidden -ffunction-sections",
+    "-C", "link-args=-fdata-sections -march=armv8.2-a",
+
+    "-C", "link-arg=-rtlib=compiler-rt"
+]
