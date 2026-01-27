@@ -1,7 +1,7 @@
 #include "lib.c"
 
 int main(void) {
-    EGLDisplay display = gles_init();
+    egl_init();
     
     FILE* handle = fopen("shaders/test.comp.glsl", "r");
 
@@ -16,10 +16,11 @@ int main(void) {
     compute(essl_comp_src, size);
 
     free(essl_comp_src);
-    
-    eglMakeCurrent(display, EGL_NO_DISPLAY, EGL_NO_DISPLAY, EGL_NO_CONTEXT);
-    eglReleaseThread();
 
-    eglTerminate(display);
+    if(SURFACE != NULL)
+        eglDestroySurface(DISPLAY, SURFACE);
+        
+    eglTerminate(DISPLAY);
+    eglReleaseThread();
     return 0;
 }

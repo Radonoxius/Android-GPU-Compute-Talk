@@ -1,40 +1,36 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include <unistd.h>
 #include <stdio.h>
-#include <fcntl.h>
+
+#include <string.h>
 
 #include <GLES3/gl31.h>
 
 #include <EGL/egl.h>
 
-static EGLDisplay gles_init() {
+static EGLDisplay DISPLAY;
+static EGLContext CONTEXT;
+static EGLSurface SURFACE;
+
+static void egl_init(void) {
+    EGLBoolean success;
+    EGLint err;
+
     EGLDisplay egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-    if (egl_display == EGL_NO_DISPLAY) {
-        printf("No display available for the device..\n");
-        exit(0);
-    }
-    EGLint err = eglGetError();
-    if (err != EGL_SUCCESS) {
-        printf("An error occured while getting display.\n");
-        exit(1);
-    }
     
     EGLint major;
     EGLint minor;
-    eglInitialize(egl_display, &major, &minor);
-    err = eglGetError();
-    if (err != EGL_SUCCESS) {
+    success = eglInitialize(egl_display, &major, &minor);
+    if(success != EGL_TRUE) {
         printf("An error occured while initializing display.\n");
         eglTerminate(egl_display);
         exit(1);
     }
 
     char* vendor_name = (char*) eglQueryString(egl_display, EGL_VENDOR);
-    printf("%s Display: ", vendor_name);
+    printf("Initialized %s Display: EGL", vendor_name);
     printf("v%d.%d\n", major, minor);
 
-    EGLBoolean success;
     EGLint config_attrs[5] = {
         EGL_RENDERABLE_TYPE,
         EGL_OPENGL_ES3_BIT,
@@ -44,11 +40,26 @@ static EGLDisplay gles_init() {
     };
 
     EGLint total_config_count;
-    success = eglChooseConfig(egl_display, config_attrs, NULL, 0, &total_config_count);
-    EGLConfig* all_configs = (EGLConfig*) malloc(sizeof(EGLConfig) * total_config_count);
-    success = eglChooseConfig(egl_display, config_attrs, all_configs, total_config_count, &total_config_count);
+    eglChooseConfig(
+        egl_display,
+        config_attrs,
+        NULL,
+        0,
+        &total_config_count
+    );
+    EGLConfig* all_configs = (EGLConfig*) malloc(
+        sizeof(EGLConfig) * total_config_count
+    );
+    eglChooseConfig(
+        egl_display,
+        config_attrs,
+        all_configs,
+        total_config_count,
+        &total_config_count
+    );
 
-    EGLConfig config = all_configs[0];
+    EGLConfig chosen_config = all_configs[0];
+    free(all_configs);
 
     success = eglBindAPI(EGL_OPENGL_ES_API);
     if(success != EGL_TRUE) {
@@ -57,7 +68,7 @@ static EGLDisplay gles_init() {
         exit(1);
     }
 
-    EGLint context_attrs[5] = {
+    EGLint egl_context_attrs[5] = {
         EGL_CONTEXT_MAJOR_VERSION,
         3,
         EGL_CONTEXT_MINOR_VERSION,
@@ -65,9 +76,15 @@ static EGLDisplay gles_init() {
         EGL_NONE
     };
 
-    EGLContext context = eglCreateContext(egl_display, config, EGL_NO_CONTEXT, context_attrs);
-    if (context == EGL_NO_CONTEXT) {
-        printf("No context available.\n");
+    EGLContext egl_context = eglCreateContext(
+        egl_display,
+        chosen_config,
+        EGL_NO_CONTEXT,
+        egl_context_attrs
+    );
+    err = eglGetError();
+    if (egl_context == EGL_NO_CONTEXT) {
+        printf("No EGL context available.\n");
         eglTerminate(egl_display);
         exit(1);
     }
@@ -77,17 +94,54 @@ static EGLDisplay gles_init() {
         exit(1);
     }
 
-    success = eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, context);
-    if(success != EGL_TRUE) {
-        printf("An error occured while setting the current off-screen display.\n");
-        eglDestroyContext(egl_display, context);
-        eglTerminate(egl_display);
-        exit(0);
+    uint8_t supports_surfaceless_ctx = 0;
+    const char* egl_extensions = eglQueryString(egl_display, EGL_EXTENSIONS);
+    char* result = strstr(egl_extensions, "EGL_KHR_surfaceless_context");
+
+    if(result != NULL) {
+        supports_surfaceless_ctx = 1;
+        printf("Using EGL_KHR_surfaceless_context\n");
     }
 
-    free(all_configs);
+    EGLSurface pbuffer = NULL;
 
-    return egl_display;
+    if(supports_surfaceless_ctx) {
+        success = eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, egl_context);
+        if(success != EGL_TRUE) {
+            printf("An error occured while setting the current off-screen display.\n");
+            eglDestroyContext(egl_display, egl_context);
+            eglTerminate(egl_display);
+            exit(1);
+        }
+    }
+    else {
+        pbuffer = eglCreatePbufferSurface(
+            egl_display,
+            chosen_config,
+            NULL
+        );
+        err = eglGetError();
+        if(err != EGL_SUCCESS) {
+            printf("An error occured while creating the PBuffer\n");
+            eglDestroyContext(egl_display, egl_context);
+            eglTerminate(egl_display);
+            exit(1);
+        }
+        printf("Using PBuffer\n");
+
+        success = eglMakeCurrent(egl_display, pbuffer, pbuffer, egl_context);
+        if(success != EGL_TRUE) {
+            printf("An error occured while setting the current off-screen display.\n");
+            eglDestroySurface(egl_display, pbuffer);
+            eglDestroyContext(egl_display, egl_context);
+            eglTerminate(egl_display);
+            exit(1);
+        }
+    }
+
+    DISPLAY = egl_display;
+    CONTEXT = egl_context;
+    SURFACE = pbuffer;
 }
 
 static void compute(const char* essl_comp_src, const int32_t comp_src_len) {
