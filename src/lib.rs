@@ -1,14 +1,15 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub mod ffi {
+    pub mod egl_utils {
+        unsafe extern "C" {
+            ///Initializes an OpenGLES context
+            ///on Android for GPU Compute
+            ///#### USE IT ONLY ONCE!
+            pub fn egl_init();
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+            ///Destroys the context created by
+            ///`egl_init`
+            ///#### USE IT ONLY ONCE!
+            pub fn egl_terminate();
+        }
     }
 }

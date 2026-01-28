@@ -1,5 +1,11 @@
-use android_gpu_demos_lib::add;
+use android_gpu_demos_lib::ffi::egl_utils::{egl_init, egl_terminate};
 
 fn main() {
-    println!("Hello, world! {}", add(1, 3));
+    unsafe {
+        egl_init();
+
+        println!("Hello from rust!");
+
+        egl_terminate();
+    }
 }

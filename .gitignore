@@ -1,5 +1,5 @@
 .vscode
-build/
+src/native-lib/build/
 
 
 # Added by cargo

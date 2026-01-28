@@ -1,8 +1,6 @@
 [alias]
 b = "build --all"
 br = "build --release --all"
-r = "run -p"
-rr = "run --release -p"
 
 [build]
 target = "aarch64-linux-android"
@@ -19,5 +17,11 @@ rustflags = [
     "-C", "link-args=-fvisibility-inlines-hidden -ffunction-sections",
     "-C", "link-args=-fdata-sections -march=armv8.2-a",
 
-    "-C", "link-arg=-rtlib=compiler-rt"
+    "-C", "link-arg=-rtlib=compiler-rt",
+    "-Ltarget/aarch64-linux-android/release/deps", "-lstatic=utils",
+
+    "-C", "lto=yes",
+    "-C", "embed-bitcode=yes",
+
+    "-lGLESv3", "-lEGL"
 ]

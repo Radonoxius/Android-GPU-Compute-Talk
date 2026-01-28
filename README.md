@@ -12,11 +12,17 @@ I recommend you to download the pre-compiled binaries which can be found in the 
 However, if you want to build/compile this project on your machine, youll need:
 
 + Linux or MacOS
-+ GNU Make
++ GNU `make`
 + Android NDK (LTS version)
 + `clang`, `llvm-ar`, `lld`, `rustc` (2024 edition) and `cargo`
 
-Just run the following to build everything:
+Before building, **you must** update the NDK_HOME variable in the Makefile. 
+After that, run the following to build everything:
 ```
 make
 ```
+
+All the executables can be found in `target/aarch64-linux-android/release` folder.
+You will also need the `shaders` folder for the programs to work properly.
+
+NOTE: The executables run ONLY on Android-Aarch64 devices!

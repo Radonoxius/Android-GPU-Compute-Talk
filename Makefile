@@ -23,35 +23,33 @@ XFLAGS = -resource-dir=$(CC_RES_DIR) \
 	-no-canonical-prefixes -fvisibility=hidden -fvisibility-inlines-hidden \
 	-ffunction-sections -fdata-sections -march=armv8.2-a -rtlib=compiler-rt
 
-CFLAGS = -O3 -Wall
-LIBS = -lGLESv3 -lEGL
+CFLAGS = -c -O3 -Wall -Werror
 
-BUILD_DIR = build
 RUST_BUILD_DIR = target
+BUILD_DIR = $(RUST_BUILD_DIR)/aarch64-linux-android/release/deps
 
 SRC_DIR = src/native-lib
 SHADER_SRC_DIR = shaders
 
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
-TARGET = $(BUILD_DIR)/main.elf
+TARGET = $(BUILD_DIR)/egl-init.o
 
-all: $(TARGET) rust_build copy_shaders
+LIB_TARGET = $(BUILD_DIR)/libutils.a
 
-$(TARGET): $(SOURCES)
+all: $(LIB_TARGET) rust_build
+
+$(LIB_TARGET): $(SOURCES)
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CTARGET) $(SYSROOT) $(SOURCES) $(CFLAGS) $(LIBS) $(XFLAGS) -o $(TARGET)
+	@$(CC) $(CTARGET) $(SYSROOT) $(SOURCES) $(CFLAGS) $(XFLAGS) -o $(TARGET)
+	@llvm-ar -rcs $(LIB_TARGET) $(TARGET)
 
 rust_build: $(TARGET)
 	@NDK_SYSROOT="$(NDK_SYSROOT)" \
 	CC_RES_DIR="$(CC_RES_DIR)" \
 	cargo br
 
-copy_shaders:
-	@mkdir -p $(BUILD_DIR)/$(SHADER_SRC_DIR)
-	@cp -r $(SHADER_SRC_DIR)/* $(BUILD_DIR)/$(SHADER_SRC_DIR)/
-
 clean:
 	@rm -rf $(BUILD_DIR)
 	@rm -rf $(RUST_BUILD_DIR)
 
-.PHONY: all rust_build copy_shaders clean
+.PHONY: all rust_build clean
