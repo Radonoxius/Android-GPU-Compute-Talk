@@ -23,7 +23,7 @@ XFLAGS = -resource-dir=$(CC_RES_DIR) \
 	-no-canonical-prefixes -fvisibility=hidden -fvisibility-inlines-hidden \
 	-ffunction-sections -fdata-sections -march=armv8.2-a -rtlib=compiler-rt
 
-CFLAGS = -c -O3 -Wall -Werror
+CFLAGS = -O3 -Wall -Werror
 
 RUST_BUILD_DIR = target
 BUILD_DIR = $(RUST_BUILD_DIR)/aarch64-linux-android/release/deps
@@ -31,19 +31,22 @@ BUILD_DIR = $(RUST_BUILD_DIR)/aarch64-linux-android/release/deps
 SRC_DIR = src/native-lib
 SHADER_SRC_DIR = shaders
 
-SOURCES = $(wildcard $(SRC_DIR)/*.c)
-TARGET = $(BUILD_DIR)/egl-init.o
+SOURCES := $(wildcard $(SRC_DIR)/*.c)
+OBJS    := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SOURCES))
 
-LIB_TARGET = $(BUILD_DIR)/libutils.a
+LIB_TARGET := $(BUILD_DIR)/libutils.a
 
-all: $(LIB_TARGET) rust_build
 
-$(LIB_TARGET): $(SOURCES)
+all: $(OBJS) $(LIB_TARGET) rust_build
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CTARGET) $(SYSROOT) $(SOURCES) $(CFLAGS) $(XFLAGS) -o $(TARGET)
-	@llvm-ar -rcs $(LIB_TARGET) $(TARGET)
+	@$(CC) $(CTARGET) -c $(SYSROOT) $(CFLAGS) $(XFLAGS) $< -o $@
 
-rust_build: $(TARGET)
+$(LIB_TARGET): $(OBJS)
+	@llvm-ar rcs $@ $^
+
+rust_build: $(LIB_TARGET)
 	@NDK_SYSROOT="$(NDK_SYSROOT)" \
 	CC_RES_DIR="$(CC_RES_DIR)" \
 	cargo br
