@@ -79,42 +79,50 @@ pub unsafe fn glMaxActiveShaderCoresARM(count: u32) {
 ///Get specified ARM GPU Core
 ///properties.
 /// 
-///-1 is returned on error or if
+///`None` is returned on error or if
 ///platform is NOT SUPPORTED
 /// 
 ///This function does nothing on other platforms
 #[allow(non_snake_case)]
-pub fn get_core_properties_ARM(property: CorePropertiesARM) -> i64 {
+pub fn get_core_properties_ARM(property: CorePropertiesARM) -> Option<i64> {
     unsafe {
+        const PRESENT_MASK_VALUE: u32 = 0x96F2;
+
         let pname: u32 = property.into();
-        let mut result: i64 = -1;
+        let result;
 
         if IS_SUPPORTED {
-            if pname == 0x96F2 {
-                glGetInteger64v(pname, &raw mut result);
+            if pname == PRESENT_MASK_VALUE {
+                let mut _res: i64 = 0;
+                glGetInteger64v(pname, &raw mut _res);
+
+                result = Some(_res);
             }
             else {
                 let mut _res: i32 = 0;
                 glGetIntegerv(pname, &raw mut _res);
 
-                result = _res as i64;
+                result = Some(_res as i64);
             }
         }
         else {
             if _is_supported_ARM_core_properties() != true {
-                return -1;
+                return None;
             }
             else {
                 IS_SUPPORTED = true;
 
-                if pname == 0x96F2 {
-                    glGetInteger64v(pname, &raw mut result);
+                if pname == PRESENT_MASK_VALUE {
+                    let mut _res: i64 = 0;
+                    glGetInteger64v(pname, &raw mut _res);
+
+                    result = Some(_res);
                 }
                 else {
                     let mut _res: i32 = 0;
                     glGetIntegerv(pname, &raw mut _res);
 
-                    result = _res as i64;
+                    result = Some(_res as i64);
                 }
             }
         }

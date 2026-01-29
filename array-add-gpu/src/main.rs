@@ -4,11 +4,12 @@ fn main() {
     egl_init();
 
     unsafe {
-        let val =
-            get_core_properties_ARM(CorePropertiesARM::ActiveCoreCount);
-        dbg!(val);
+        let core_count =
+            get_core_properties_ARM(CorePropertiesARM::CoreCount);
 
-        glMaxActiveShaderCoresARM(1);
+        glMaxActiveShaderCoresARM(
+            core_count.unwrap_or(1) as u32
+        );
     }
 
     println!("Hello from rust!");
