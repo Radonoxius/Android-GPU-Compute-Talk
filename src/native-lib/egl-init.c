@@ -37,11 +37,19 @@ void egl_init(void) {
     printf("Initialized %s Display: EGL", vendor_name);
     printf("v%d.%d\n", major, minor);
 
-    EGLint config_attrs[5] = {
+    EGLint config_attrs[9] = {
         EGL_RENDERABLE_TYPE,
         EGL_OPENGL_ES3_BIT,
+
         EGL_CONFORMANT,
         EGL_OPENGL_ES3_BIT,
+
+        EGL_SURFACE_TYPE,
+        EGL_PBUFFER_BIT,
+
+        EGL_MAX_PBUFFER_PIXELS,
+        1,
+
         EGL_NONE
     };
 
@@ -100,6 +108,7 @@ void egl_init(void) {
     uint8_t supports_surfaceless_ctx = 0;
     const char* egl_extensions = eglQueryString(egl_display, EGL_EXTENSIONS);
     char* result = strstr(egl_extensions, "EGL_KHR_surfaceless_context");
+    
 
     if(result != NULL) {
         supports_surfaceless_ctx = 1;

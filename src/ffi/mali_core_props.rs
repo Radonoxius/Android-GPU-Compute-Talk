@@ -89,9 +89,11 @@ pub fn get_core_properties_ARM(property: CorePropertiesARM) -> Option<i64> {
         const PRESENT_MASK_VALUE: u32 = 0x96F2;
 
         let pname: u32 = property.into();
-        let result;
+        let mut result= None;
 
-        if IS_SUPPORTED {
+        if IS_SUPPORTED || _is_supported_ARM_core_properties() == true {
+            IS_SUPPORTED = true;
+            
             if pname == PRESENT_MASK_VALUE {
                 let mut _res: i64 = 0;
                 glGetInteger64v(pname, &raw mut _res);
@@ -103,27 +105,6 @@ pub fn get_core_properties_ARM(property: CorePropertiesARM) -> Option<i64> {
                 glGetIntegerv(pname, &raw mut _res);
 
                 result = Some(_res as i64);
-            }
-        }
-        else {
-            if _is_supported_ARM_core_properties() != true {
-                return None;
-            }
-            else {
-                IS_SUPPORTED = true;
-
-                if pname == PRESENT_MASK_VALUE {
-                    let mut _res: i64 = 0;
-                    glGetInteger64v(pname, &raw mut _res);
-
-                    result = Some(_res);
-                }
-                else {
-                    let mut _res: i32 = 0;
-                    glGetIntegerv(pname, &raw mut _res);
-
-                    result = Some(_res as i64);
-                }
             }
         }
 

@@ -23,5 +23,5 @@ rustflags = [
     "-C", "lto=yes",
     "-C", "embed-bitcode=yes",
 
-    "-lGLESv3", "-lEGL"
+    "-lGLESv3", "-lEGL", "-landroid"
 ]

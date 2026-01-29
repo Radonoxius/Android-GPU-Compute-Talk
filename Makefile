@@ -41,7 +41,7 @@ all: $(OBJS) $(LIB_TARGET) rust_build
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(BUILD_DIR)
-	@$(CC) $(CTARGET) -c $(SYSROOT) $(CFLAGS) $(XFLAGS) $< -o $@
+	$(CC) $(CTARGET) -c $(SYSROOT) $(CFLAGS) $(XFLAGS) $< -o $@
 
 $(LIB_TARGET): $(OBJS)
 	@llvm-ar rcs $@ $^
