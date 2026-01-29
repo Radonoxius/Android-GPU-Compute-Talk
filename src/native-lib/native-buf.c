@@ -82,17 +82,18 @@ void* map_hardware_buffer(
             .bottom = 1
         };
 
-        void* mapped_addrs;
+        void* mapped_addr;
         int res = AHardwareBuffer_lock(
             h_buffer,
-            AHARDWAREBUFFER_USAGE_CPU_WRITE_RARELY,
+            AHARDWAREBUFFER_USAGE_CPU_WRITE_RARELY |
+                AHARDWAREBUFFER_USAGE_CPU_READ_RARELY,
             -1,
             &mem_window,
-            &mapped_addrs
+            &mapped_addr
         );
 
         if (res == 0)
-            return mapped_addrs;
+            return mapped_addr;
         else
             return NULL;
     }
@@ -117,3 +118,88 @@ void free_hardware_buffer(AHardwareBuffer* buffer) {
     )
         AHardwareBuffer_release(buffer);
 }
+
+uint8_t IS_CACHED1 = 0;
+
+EGLClientBuffer (*_eglGetNativeClientBufferANDROID) (
+    const struct AHardwareBuffer* buffer
+);
+
+EGLClientBuffer eglGetNativeClientBufferANDROID(
+    const struct AHardwareBuffer *buffer
+) {
+    if (IS_CACHED1) {
+        return _eglGetNativeClientBufferANDROID(buffer);
+    }
+    else {
+        if (
+            IS_SUPPORTED_NATIVE_BUFFER ||
+            _is_supported_ANDROID_hardware_buffer()
+        ) {
+            IS_CACHED1 = 1;
+
+            _eglGetNativeClientBufferANDROID =
+                (EGLClientBuffer (*) (const struct AHardwareBuffer*))
+                eglGetProcAddress("eglGetNativeClientBufferANDROID");
+
+            return _eglGetNativeClientBufferANDROID(buffer);
+        }
+        else {
+            return NULL;
+        }
+    }
+}
+
+typedef void* GLeglClientBufferEXT;
+uint8_t IS_CACHED2 = 0;
+
+void (*_glBufferStorageExternalEXT) (
+    GLenum target,
+    GLintptr offset,
+    GLsizeiptr size,
+    GLeglClientBufferEXT clientBuffer,
+    GLbitfield flags
+);
+
+void glBufferStorageExternalEXT(
+    GLenum target,
+    GLintptr offset,
+    GLsizeiptr size,
+    GLeglClientBufferEXT clientBuffer,
+    GLbitfield flags
+) {
+    if (IS_CACHED2) {
+        return _glBufferStorageExternalEXT(
+            target,
+            offset,
+            size,
+            clientBuffer,
+            flags
+        );
+    }
+    else {
+        if (
+            IS_SUPPORTED_NATIVE_BUFFER ||
+            _is_supported_ANDROID_hardware_buffer()
+        ) {
+            IS_CACHED2 = 1;
+
+            _glBufferStorageExternalEXT =
+                (void (*) (
+                    GLenum target,
+                    GLintptr offset,
+                    GLsizeiptr size,
+                    GLeglClientBufferEXT clientBuffer,
+                    GLbitfield flags
+                )) eglGetProcAddress("glBufferStorageExternalEXT");
+
+            return _glBufferStorageExternalEXT(
+                target,
+                offset,
+                size,
+                clientBuffer,
+                flags
+            );
+        }
+    }
+};

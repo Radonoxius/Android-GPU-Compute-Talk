@@ -17,7 +17,7 @@ layout(std430, binding = 2) writeonly buffer C {
 };
 
 void main() {
-    uint index = gl_GlobalInvocationID.x;
+    uint index = gl_LocalInvocationID.x;
 
     c[index] = a[index] + b[index];
 }

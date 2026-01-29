@@ -1,3 +1,5 @@
+use crate::ffi::{glGetInteger64v, glGetIntegerv};
+
 static mut IS_FN_CACHED: bool = false;
 static mut IS_SUPPORTED: bool = false;
 
@@ -11,12 +13,6 @@ unsafe extern "C" {
     safe fn _setup_glMaxActiveShaderCoresARM() -> unsafe extern "C" fn(u32);
 
     safe fn _is_supported_ARM_core_properties() -> bool;
-}
-
-unsafe extern "C" {
-    fn glGetIntegerv(pname: u32, data: *mut i32);
-
-    fn glGetInteger64v(pname: u32, data: *mut i64);
 }
 
 pub enum CorePropertiesARM {
