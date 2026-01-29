@@ -103,7 +103,7 @@ void egl_init(void) {
 
     if(result != NULL) {
         supports_surfaceless_ctx = 1;
-        printf("Using EGL_KHR_surfaceless_context\n");
+        printf("Using EGL_KHR_surfaceless_context\n\n");
     }
 
     EGLSurface pbuffer = NULL;
@@ -130,7 +130,7 @@ void egl_init(void) {
             eglDestroyContext(egl_display, egl_context);
             egl_error_terminate(egl_display);
         }
-        printf("Using PBuffer\n");
+        printf("Using PBuffer\n\n");
 
         success = eglMakeCurrent(egl_display, pbuffer, pbuffer, egl_context);
         if(success != EGL_TRUE) {
@@ -154,6 +154,7 @@ void egl_terminate(void) {
         
     eglTerminate(DISPLAY);
     eglReleaseThread();
+    printf("\nSuccessfully terminated EGL.\n");
 }
 
 //static void compute(const char* essl_comp_src, const int32_t comp_src_len) {
