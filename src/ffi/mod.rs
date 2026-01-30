@@ -59,4 +59,11 @@ unsafe extern "C" {
     pub fn glUnmapBuffer(buffer_type: u32);
 
     pub fn glDeleteBuffers(buffer_count: i32, buffers: *mut u32);
+
+
+    pub(crate) fn getrandom(
+        buffer: *mut c_void,
+        size: usize,
+        flags: u32
+    ) -> isize;
 }

@@ -8,7 +8,9 @@ unsafe extern "C" {
         shader: u32
     );
 
-    pub fn create_program() -> u32;
+    pub fn create_program(
+        shader: u32
+    ) -> u32;
 
     pub fn gles_cleanup(
         program: u32,
