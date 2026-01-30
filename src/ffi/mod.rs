@@ -28,6 +28,8 @@ unsafe extern "C" {
 
     pub fn glGetInteger64v(pname: u32, data: *mut i64);
 
+    pub fn glGetIntegeri_v(pname: u32, index: u32, data: *mut i32);
+
     pub fn glGenBuffers(buffer_count: i32, buffers: *mut u32);
 
     pub fn glBindBuffer(buffer_type: u32, buffer: u32);
