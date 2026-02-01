@@ -50,6 +50,9 @@ GPU variant-v2:
 >
 >RAM consumed: ~1.2GB
 
+To see real benefits, the operation needs to be math-heavy and
+you need to queue up a ton of work!
+
 These values are device dependent. Its just for illustration!
 
 ## Build prerequisites
