@@ -62,6 +62,8 @@ unsafe extern "C" {
 
     pub fn glDeleteBuffers(buffer_count: i32, buffers: *mut u32);
 
+    pub fn glFinish();
+
 
     pub(crate) fn getrandom(
         buffer: *mut c_void,

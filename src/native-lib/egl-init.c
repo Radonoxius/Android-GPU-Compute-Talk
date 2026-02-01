@@ -152,7 +152,7 @@ void egl_init(void) {
     }
 
     const unsigned char* vendor = (unsigned char*) glGetString(GL_VENDOR);
-    printf("GPU Vendor: %s\n", vendor);
+    printf("GPU Vendor: %s\n\n", vendor);
 
     DISPLAY = egl_display;
     CONTEXT = egl_context;
