@@ -10,17 +10,31 @@ use android_gpu_demos_lib::{
     GRND_URANDOM,
     
     ffi::{
-        GL_SHADER_STORAGE_BARRIER_BIT, GL_SHADER_STORAGE_BUFFER, GL_STATIC_READ, GL_STREAM_DRAW, egl_utils::{
+        GL_SHADER_STORAGE_BARRIER_BIT,
+        GL_SHADER_STORAGE_BUFFER, 
+        GL_STATIC_READ,
+        GL_STREAM_DRAW,
+        egl_utils::{
             egl_init,
             egl_terminate
-        }, glBindBuffer, glBindBufferBase, glBufferData, glDeleteBuffers, glDispatchCompute, glFinish, glGenBuffers, glMemoryBarrier, gles_utils::{
+        },
+        glBindBuffer,
+        glBindBufferBase,
+        glBufferData,
+        glDeleteBuffers,
+        glDispatchCompute, 
+        glFinish,
+        glGenBuffers,
+        glMemoryBarrier,
+        gles_utils::{
             compile_shader,
             create_program,
             create_shader,
             get_max_work_group_count, 
             get_max_work_group_invocations,
             gles_cleanup
-        }, mali_core_props::glMaxActiveShaderCoresARM
+        },
+        mali_core_props::glMaxActiveShaderCoresARM
     },
 
     generate_random,
