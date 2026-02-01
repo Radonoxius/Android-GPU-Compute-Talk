@@ -1,9 +1,9 @@
 [workspace]
 resolver = "3"
-members = ["array-add-gpu"]
+members = ["array-add-cpu","array-add-gpu", "array-add-gpu-v2"]
 
 [package]
-name = "android-gpu-demos-lib"
+name = "android-gpu-utils"
 version = "0.1.0"
 edition = "2024"
 build = "build.rs"

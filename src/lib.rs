@@ -106,3 +106,27 @@ pub fn generate_random<T>(
 
     return buf;
 }
+
+pub unsafe fn fill_random<T>(
+    buf_ptr: *mut c_void,
+    element_count: usize,
+    flags: u32
+) where T: Copy + Add + Sub + Mul + Div +
+    AddAssign + SubAssign + MulAssign + DivAssign +
+    PartialOrd + PartialEq {
+    unsafe {
+        let mut bytes_written = 0;
+
+        while bytes_written < size_of::<T>() * element_count {
+            let ret = getrandom(
+                buf_ptr,
+                size_of::<T>() * element_count - bytes_written,
+                flags
+            );
+
+            if ret > 0 {
+                bytes_written += ret as usize;
+            }
+        }
+    }
+}

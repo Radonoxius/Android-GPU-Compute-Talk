@@ -1,5 +1,12 @@
 use std::ffi::c_void;
 
+pub const GL_MAP_PERSISTENT_BIT_EXT: u32 = 0x0040;
+pub const GL_MAP_COHERENT_BIT_EXT: u32 = 0x0080;
+pub const GL_DYNAMIC_STORAGE_BIT_EXT: u32 = 0x0100;
+pub const GL_CLIENT_STORAGE_BIT_EXT: u32 = 0x0200;
+
+pub const GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT_EXT: u32 = 0x00004000;
+
 unsafe extern "C" {
     pub fn alloc_hardware_buffer(
         hardware_buffer_size: u32

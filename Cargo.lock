@@ -3,12 +3,26 @@
 version = 4
 
 [[package]]
-name = "android-gpu-demos-lib"
+name = "android-gpu-utils"
 version = "0.1.0"
+
+[[package]]
+name = "array-add-cpu"
+version = "0.1.0"
+dependencies = [
+ "android-gpu-utils",
+]
 
 [[package]]
 name = "array-add-gpu"
 version = "0.1.0"
 dependencies = [
- "android-gpu-demos-lib",
+ "android-gpu-utils",
+]
+
+[[package]]
+name = "array-add-gpu-v2"
+version = "0.1.0"
+dependencies = [
+ "android-gpu-utils",
 ]

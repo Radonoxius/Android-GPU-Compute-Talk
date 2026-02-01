@@ -1,5 +1,4 @@
 use std::{
-    ffi::c_void,
     io::stdin,
     time::Instant
 };
@@ -8,19 +7,18 @@ use android_gpu_utils::{
     GRND_URANDOM,
     
     ffi::{
+        GL_MAP_READ_BIT,
+        GL_MAP_WRITE_BIT,
         GL_SHADER_STORAGE_BARRIER_BIT,
-        GL_SHADER_STORAGE_BUFFER, 
-        GL_STATIC_READ,
-        GL_STREAM_DRAW,
+        GL_SHADER_STORAGE_BUFFER,
         egl_utils::{
             egl_init,
             egl_terminate
         },
         glBindBuffer,
         glBindBufferBase,
-        glBufferData,
-        glDeleteBuffers,
-        glDispatchCompute, 
+        glDeleteBuffers, 
+        glDispatchCompute,
         glFinish,
         glGenBuffers,
         glMemoryBarrier,
@@ -32,9 +30,18 @@ use android_gpu_utils::{
             get_max_work_group_invocations,
             gles_cleanup
         },
+        hardware_buffer::{
+            GL_CLIENT_STORAGE_BIT_EXT,
+            alloc_hardware_buffer,
+            eglGetNativeClientBufferANDROID,
+            free_hardware_buffer,
+            glBufferStorageExternalEXT,
+            map_hardware_buffer,
+            unmap_hardware_buffer
+        },
     },
-
-    generate_random,
+    
+    fill_random,
     read_shader
 };
 
@@ -58,12 +65,12 @@ fn main() {
         input.pop();
         let gwg_size: usize = input.parse().unwrap();
 
-        ELEMENT_COUNT = gwg_size * max_lwg_invocations;
+        ELEMENT_COUNT = gwg_size * max_lwg_invocations * 4;
 
         let t_start = Instant::now();
 
         let shader = create_shader(
-            read_shader("shaders/array-add.comp.glsl")
+            read_shader("shaders/array-add-v2.comp.glsl")
         );
 
         compile_shader(shader);
@@ -75,42 +82,59 @@ fn main() {
         #[allow(non_snake_case)]
         let mut bufA = 0;
         glGenBuffers(1, &raw mut bufA);
-        let a = generate_random::<f32>(ELEMENT_COUNT, GRND_URANDOM);
+        let a =
+            alloc_hardware_buffer(ELEMENT_COUNT as u32 * 4);
+        let a_mapped =
+            map_hardware_buffer(a, ELEMENT_COUNT as i32 * 4);
+        fill_random::<f32>(a_mapped, ELEMENT_COUNT, GRND_URANDOM);
+        unmap_hardware_buffer(a);
+        let a_egl_buffer = eglGetNativeClientBufferANDROID(a);
+
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufA);
+        glBufferStorageExternalEXT(
+            GL_SHADER_STORAGE_BUFFER,
+            0,
+            ELEMENT_COUNT as isize * 4,
+            a_egl_buffer,
+            GL_MAP_WRITE_BIT | GL_CLIENT_STORAGE_BIT_EXT
+        );
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, bufA);
 
         #[allow(non_snake_case)]
         let mut bufB = 0;
         glGenBuffers(1, &raw mut bufB);
-        let b = generate_random::<f32>(ELEMENT_COUNT, GRND_URANDOM);
+        let b =
+            alloc_hardware_buffer(ELEMENT_COUNT as u32 * 4);
+        let b_mapped =
+            map_hardware_buffer(b, ELEMENT_COUNT as i32 * 4);
+        fill_random::<f32>(b_mapped, ELEMENT_COUNT, GRND_URANDOM);
+        unmap_hardware_buffer(b);
+        let b_egl_buffer = eglGetNativeClientBufferANDROID(b);
+
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufB);
+        glBufferStorageExternalEXT(
+            GL_SHADER_STORAGE_BUFFER,
+            0,
+            ELEMENT_COUNT as isize * 4,
+            b_egl_buffer,
+            GL_MAP_WRITE_BIT | GL_CLIENT_STORAGE_BIT_EXT
+        );
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bufB);
 
         #[allow(non_snake_case)]
         let mut bufC = 0;
         glGenBuffers(1, &raw mut bufC);
-        let c = Vec::<f32>::with_capacity(ELEMENT_COUNT * 4);
-
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufA);
-        glBufferData(
-            GL_SHADER_STORAGE_BUFFER,
-            ELEMENT_COUNT as isize * 4,
-            a.as_ptr() as *const c_void,
-            GL_STREAM_DRAW
-        );
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, bufA);
-
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufB);
-        glBufferData(
-            GL_SHADER_STORAGE_BUFFER,
-            ELEMENT_COUNT as isize * 4,
-            b.as_ptr() as *const c_void,
-            GL_STREAM_DRAW
-        );
-        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bufB);
+        let c =
+            alloc_hardware_buffer(ELEMENT_COUNT as u32 * 4);
+        let c_egl_buffer = eglGetNativeClientBufferANDROID(c);
 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufC);
-        glBufferData(
+        glBufferStorageExternalEXT(
             GL_SHADER_STORAGE_BUFFER,
+            0,
             ELEMENT_COUNT as isize * 4,
-            c.as_ptr() as *const c_void,
-            GL_STATIC_READ
+            c_egl_buffer,
+            GL_MAP_READ_BIT | GL_CLIENT_STORAGE_BIT_EXT
         );
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, bufC);
 
@@ -120,6 +144,7 @@ fn main() {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, bufC);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         glFinish();
+        
         let t_compute_finish = t_compute_start.elapsed().as_micros();
 
         println!("Compute time: {}micros", t_compute_finish);
@@ -127,6 +152,10 @@ fn main() {
         glDeleteBuffers(1, &raw mut bufC);
         glDeleteBuffers(1, &raw mut bufB);
         glDeleteBuffers(1, &raw mut bufA);
+
+        free_hardware_buffer(c);
+        free_hardware_buffer(b);
+        free_hardware_buffer(a);
 
         gles_cleanup(program, shader);
 
