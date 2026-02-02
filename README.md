@@ -43,6 +43,17 @@ GPU variant-v2:
 To see real benefits, the operation needs to be math-heavy and
 you need to queue up a ton of work!
 
+When doing 4x4 (f32) Matrix multiplication with 16384 x 384 matrices,
+we see the following:
+
+CPU variant:
+>Compute time: ~700ms  
+>Total time:   ~20s
+
+GPU variant:
+>Compute time: ~65ms  
+>Total time:   ~0.s
+
 These values are device dependent. Its just for illustration!
 
 ## Build prerequisites

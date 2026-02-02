@@ -88,7 +88,12 @@ fn main() {
     println!("Enter the CPU-Global Work Group size (unrestricted)");
     stdin().read_line(&mut input).unwrap();
     input.pop();
+    
     let n: usize = input.parse::<usize>().unwrap() * max_lwg_invocations as usize;
+
+    let t_start = Instant::now();
+
+    println!("\nOperating on {} 4x4-f32 matrices!\n", n);
 
     let mut matrices1 = Vec::with_capacity(n);
     let mut matrices2 = Vec::with_capacity(n);
@@ -99,8 +104,6 @@ fn main() {
         matrices2.push(Mat4::random());
     }
 
-    println!("\nOperating on {} 4x4-f32 matrices!\n", n);
-
     let start = Instant::now();
     
     for i in 0..n {
@@ -109,6 +112,9 @@ fn main() {
     
     let duration = start.elapsed().as_micros();
     println!("Compute time: {}micros", duration);
+
+    let t_finish = t_start.elapsed().as_millis();
+    println!("Total time: {}ms", t_finish);
 
     unsafe {
         egl_terminate();
