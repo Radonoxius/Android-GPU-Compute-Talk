@@ -1,4 +1,7 @@
-use crate::ffi::{glGetIntegeri_v, glGetIntegerv};
+use crate::ffi::{
+    glGetIntegeri_v,
+    glGetIntegerv
+};
 
 unsafe extern "C" {
     fn create_shader_from_src(
@@ -6,21 +9,31 @@ unsafe extern "C" {
         len: i32
     ) -> u32;
 
+    ///Compiles the shader created using `create_shader`
+    /// 
+    ///Program exits if compilation fails
     pub fn compile_shader(
         shader: u32
     );
 
+    ///Creates a single-shader program
+    /// 
+    ///Uses the shader created using `create_shader`
     pub fn create_program(
         shader: u32
     ) -> u32;
 
+    ///Destroys the GLES shader and program
+    /// 
+    ///#### USE IT ONLY ONCE, AT THE END OF THE PROGRAM!
     pub fn gles_cleanup(
         program: u32,
         shader: u32
     );
 }
 
-pub unsafe fn create_shader(src_code: Vec<u8>) -> u32 {
+///Creates a shader from a single ESSL source file
+pub fn create_shader(src_code: Vec<u8>) -> u32 {
     unsafe {
         create_shader_from_src(src_code.as_ptr(), src_code.len() as i32)
     }

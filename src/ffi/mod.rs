@@ -24,22 +24,29 @@ pub const GL_MAP_READ_BIT: u32 = 0x1;
 pub const GL_MAP_WRITE_BIT: u32 = 0x2;
 
 unsafe extern "C" {
+    ///Refer GLES specifications
     pub fn glGetIntegerv(pname: u32, data: *mut i32);
 
+    ///Refer GLES specifications
     pub fn glGetInteger64v(pname: u32, data: *mut i64);
 
+    ///Refer GLES specifications
     pub fn glGetIntegeri_v(pname: u32, index: u32, data: *mut i32);
 
+    ///Refer GLES specifications
     pub fn glGenBuffers(buffer_count: i32, buffers: *mut u32);
 
+    ///Refer GLES specifications
     pub fn glBindBuffer(buffer_type: u32, buffer: u32);
 
+    ///Refer GLES specifications
     pub fn glBindBufferBase(
         buffer_type: u32,
         buffer_index: u32, 
         buffer: u32
     );
 
+    ///Refer GLES specifications
     pub fn glBufferData(
         buffer_type: u32,
         size: isize,
@@ -47,10 +54,13 @@ unsafe extern "C" {
         usage: u32
     );
 
+    ///Refer GLES specifications
     pub fn glDispatchCompute(x: u32, y: u32, z: u32);
 
+    ///Refer GLES specifications
     pub fn glMemoryBarrier(barriers: u32);
 
+    ///Refer GLES specifications
     pub fn glMapBufferRange(
         buffer_type: u32,
         offset: i64,
@@ -58,13 +68,16 @@ unsafe extern "C" {
         access: u32
     ) -> *mut c_void;
 
+    ///Refer GLES specifications
     pub fn glUnmapBuffer(buffer_type: u32);
 
+    ///Refer GLES specifications
     pub fn glDeleteBuffers(buffer_count: i32, buffers: *mut u32);
 
+    ///Refer GLES specifications
     pub fn glFinish();
 
-
+    ///Refer man(2) pages to know more
     pub(crate) fn getrandom(
         buffer: *mut c_void,
         size: usize,

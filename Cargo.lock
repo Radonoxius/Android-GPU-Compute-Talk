@@ -26,3 +26,10 @@ version = "0.1.0"
 dependencies = [
  "android-gpu-utils",
 ]
+
+[[package]]
+name = "mat-cpu"
+version = "0.1.0"
+dependencies = [
+ "android-gpu-utils",
+]

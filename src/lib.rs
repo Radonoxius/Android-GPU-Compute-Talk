@@ -21,6 +21,17 @@ use crate::ffi::{
     gles_utils::get_max_work_group_invocations
 };
 
+///Reads the shader at the specified path and
+///adds the following lines to the top of the shader src:
+/// 
+///#version 320 es<br>  
+///#define WORKGROUP_SIZE x
+/// 
+///where, x is the maximum local work group
+///invocations (determined at runtime)
+/// 
+///Finally, returns the shader source code as
+///a vector of bytes
 pub fn read_shader(path: &str) -> Vec<u8> {
     let max_lwg_invocations = get_max_work_group_invocations();
 
@@ -51,20 +62,23 @@ pub const GRND_RANDOM: u32 = 0x2;
 pub const GRND_URANDOM: u32 = 0x0;
 pub const GRND_NONBLOCK: u32 = 0x1;
 
+///Returns a vector of size `size` that has random bytes.
+/// 
+///The RNG is specified using the flags.
 pub fn generate_random_bytes(
-    bytes: usize,
+    size: usize,
     flags: u32
 ) -> Vec<u8> {
-    let mut buf = Vec::with_capacity(bytes);
+    let mut buf = Vec::with_capacity(size);
 
     unsafe {
         let mut bytes_written = 0;
-        buf.set_len(bytes);
+        buf.set_len(size);
 
-        while bytes_written < bytes {
+        while bytes_written < size {
             let ret = getrandom(
                 buf.as_mut_ptr() as *mut c_void,
-                bytes - bytes_written,
+                size - bytes_written,
                 flags
             );
 
@@ -77,6 +91,10 @@ pub fn generate_random_bytes(
     return buf;
 }
 
+///Returns a vector of size `element_count` that has random values
+///of type `T`. (T is mostly a numeric type)
+/// 
+///The RNG is specified using the flags.
 pub fn generate_random<T>(
     element_count: usize,
     flags: u32
@@ -107,6 +125,12 @@ pub fn generate_random<T>(
     return buf;
 }
 
+///Fills a buffer with `element_count` random values
+///of type `T`. (T is mostly a numeric type)
+/// 
+///The RNG is specified using the flags.
+/// 
+///SAFETY: `buf_ptr` should be a valid pointer.
 pub unsafe fn fill_random<T>(
     buf_ptr: *mut c_void,
     element_count: usize,

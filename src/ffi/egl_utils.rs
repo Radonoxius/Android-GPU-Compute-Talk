@@ -1,6 +1,6 @@
 unsafe extern "C" {
     ///Initializes an OpenGLES context
-    ///on Android for GPU Compute
+    ///on Android, for GPU Compute purposes
     ///#### USE IT ONLY ONCE, AT THE START OF THE PROGRAM!
     pub fn egl_init();
 

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["array-add-cpu","array-add-gpu", "array-add-gpu-v2"]
+members = ["array-add-cpu","array-add-gpu", "array-add-gpu-v2", "mat-cpu"]
 
 [package]
 name = "android-gpu-utils"

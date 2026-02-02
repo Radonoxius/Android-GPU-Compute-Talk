@@ -1,4 +1,7 @@
-use crate::ffi::{glGetInteger64v, glGetIntegerv};
+use crate::ffi::{
+    glGetInteger64v,
+    glGetIntegerv
+};
 
 static mut IS_FN_CACHED: bool = false;
 static mut IS_SUPPORTED: bool = false;
@@ -10,11 +13,12 @@ extern "C" fn _dummy(_c: u32) {}
 static mut _glMaxActiveShaderCoresARM: unsafe extern "C" fn(u32) = _dummy;
 
 unsafe extern "C" {
-    safe fn _setup_glMaxActiveShaderCoresARM() -> unsafe extern "C" fn(u32);
+    fn _setup_glMaxActiveShaderCoresARM() -> unsafe extern "C" fn(u32);
 
-    safe fn _is_supported_ARM_core_properties() -> bool;
+    fn _is_supported_ARM_core_properties() -> bool;
 }
 
+///Represents ARM-GPU Core properties
 pub enum CorePropertiesARM {
     CoreCount,
     ActiveCoreCount,
@@ -47,7 +51,7 @@ impl Into<u32> for CorePropertiesARM {
 ///SAFETY: `count` should be positive and less than or
 ///equal to the maximum core count
 ///
-///This function does nothing on other platforms
+///#### This function does nothing on other platforms
 #[allow(non_snake_case)]
 #[allow(useless_ptr_null_checks)]
 pub unsafe fn glMaxActiveShaderCoresARM(count: u32) {
@@ -72,13 +76,13 @@ pub unsafe fn glMaxActiveShaderCoresARM(count: u32) {
     }
 }
 
-///Get specified ARM GPU Core
+///Get specified ARM-GPU Core
 ///properties.
 /// 
 ///`None` is returned on error or if
-///platform is NOT SUPPORTED
+///platform is **NOT SUPPORTED**
 /// 
-///This function does nothing on other platforms
+///#### This function does nothing on other platforms
 #[allow(non_snake_case)]
 pub fn get_core_properties_ARM(property: CorePropertiesARM) -> Option<i64> {
     unsafe {

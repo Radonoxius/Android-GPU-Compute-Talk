@@ -17,9 +17,6 @@ use android_gpu_utils::{
     generate_random
 };
 
-static mut ELEMENT_COUNT: usize = 0;
-
-#[allow(static_mut_refs)]
 fn main() {
     unsafe {
         egl_init();
@@ -40,23 +37,21 @@ fn main() {
     let b: Vec<f32>;
     let mut c: Vec<f32>;
 
-    unsafe {
-        ELEMENT_COUNT = gwg_size * max_lwg_invocations as usize;
+    let n = gwg_size * max_lwg_invocations as usize;
 
-        println!("\nOperating on {} (f32) numbers!\n", ELEMENT_COUNT);
+    println!("\nOperating on {} (f32) numbers!\n", n);
 
-        a = generate_random(
-            ELEMENT_COUNT,
-            GRND_URANDOM
-        );
+    a = generate_random(
+        n,
+        GRND_URANDOM
+    );
 
-        b = generate_random(
-            ELEMENT_COUNT,
-            GRND_URANDOM
-        );
+    b = generate_random(
+        n,
+        GRND_URANDOM
+    );
 
-        c = Vec::with_capacity(ELEMENT_COUNT * 4);
-    }
+    c = Vec::with_capacity(n * 4);
 
     let t_compute_start = Instant::now();
     for i in 0..(a.len()) {

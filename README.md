@@ -12,42 +12,32 @@ tests with 3 arrays (f32), each having 65535 x 384 elements (f32s) in all cases.
 The array is around 96MiB each.
 
 CPU variant:
->Compute time: ~140ms
->
->Total time:   ~1.2s
->
+>Compute time: ~140ms  
+>Total time:   ~1.2s  
 >RAM consumed: ~300MB
 
 GPU variant:
->Compute time: ~39ms
->
->Total time:   ~1.3s
->
+>Compute time: ~39ms  
+>Total time:   ~1.3s  
 >RAM consumed: ~600MB
 
 GPU variant-v2:
->Compute time: ~37ms
->
->Total time:   ~1.1s
->
+>Compute time: ~37ms  
+>Total time:   ~1.1s  
 >RAM consumed: ~300MB
 
 When the Array has 262140 x 384 elements, we see the following numbers:
 
 CPU variant:
->Compute time: ~600ms
->
->Total time:   ~4.8s
->
+>Compute time: ~600ms  
+>Total time:   ~4.8s  
 >RAM consumed: ~1.2GB
 
 GPU variant: **Out of Memory**
 
 GPU variant-v2:
->Compute time: ~135ms
->
->Total time:   ~4.2s
->
+>Compute time: ~135ms  
+>Total time:   ~4.2s  
 >RAM consumed: ~1.2GB
 
 To see real benefits, the operation needs to be math-heavy and
