@@ -1,7 +1,8 @@
 # Windows is not supported!
+# MacOS support is untested. It might work if you try harder.
 
-# Set the NDK_HOME path to the actual path before running!
-NDK_HOME = /home/radon/Android/Sdk/ndk/27.3.13750724
+# Set the NDK_HOME path to the actual path before building!
+NDK_HOME = /home/<>/Android/Sdk/ndk/27.3.13750724
 
 PLATFORM := $(shell uname -s)
 
