@@ -18,7 +18,7 @@ use android_gpu_utils::{
 
 /// Aligned to 16 bytes to ensure the compiler can use 128-bit SIMD loads safely.
 #[repr(C, align(16))]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 struct Mat4 {
     // We use a nested array to help the compiler see the row-major structure
     rows: [[f32; 4]; 4],
@@ -93,8 +93,6 @@ fn main() {
     let mut matrices1 = Vec::with_capacity(n);
     let mut matrices2 = Vec::with_capacity(n);
     let mut res = Vec::with_capacity(n);
-
-    println!("{:?}", Mat4::random());
 
     for _ in 0..n {
         matrices1.push(Mat4::random());
