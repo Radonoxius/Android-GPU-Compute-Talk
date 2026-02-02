@@ -10,7 +10,7 @@ WEC talk - GPU Compute on Android (using OpenGLES Compute)!
 No need to panic looking at this huge project.
 
 This is all you need to look at:
-```
+```bash
 .
 ├── Resources -------(Books/Slides)
 |
@@ -100,7 +100,7 @@ However, if you want to build/compile this project on your machine, youll need:
 
 Before building, **you must** update the NDK_HOME variable in the Makefile. 
 After that, run the following to build everything:
-```
+```bash
 make
 ```
 
