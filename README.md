@@ -10,7 +10,7 @@ WEC talk - GPU Compute on Android (using OpenGLES Compute)!
 No need to panic looking at this huge project.
 
 This is all you need to look at:
-```bash
+```
 .
 ├── Resources -------(Books/Slides)
 |
@@ -44,19 +44,25 @@ CPU variant:
 >Compute time: ~140ms  
 >Total time:   ~1.2s  
 >RAM consumed:  
->![CPU Memory Footprint](./Resources/Pics/array-add-cpu-Memory-Footprint.jpg)
+>![CPU Memory Footprint](./Resources/Pics/array-add-cpu-Memory-Footprint.jpg)  
+>Output:  
+>![O1](./Resources/Pics/array-add-cpu.jpg)
 
 GPU variant:
 >Compute time: ~39ms  
 >Total time:   ~1.3s  
 >RAM consumed:  
->![GPU Memory Footprint](./Resources/Pics/add-array-gpu-Memory-Footprint.jpg)
+>![GPU Memory Footprint](./Resources/Pics/array-add-gpu-Memory-Footprint.jpg)  
+>Output:  
+>![O2](./Resources/Pics/array-add-gpu.jpg)
 
 GPU variant-v2: *(Uses Hardware Buffers)*
 >Compute time: ~37ms  
 >Total time:   ~1.1s  
 >RAM consumed:  
->![GPU-v2 Memory Footprint](./Resources/Pics/add-array-gpu-v2-Memory-Footprint.jpg)
+>![GPU-v2 Memory Footprint](./Resources/Pics/array-add-gpu-v2-Memory-Footprint.jpg)  
+>Output:  
+>![O3](./Resources/Pics/array-add-gpu-v2.jpg)
 
 When the Array has 262140 x 384 elements, we see the following numbers:
 
@@ -77,11 +83,15 @@ we see the following:
 
 CPU variant:
 >Compute time: ~700ms  
->Total time:   ~20s
+>Total time:   ~20s  
+>Output:  
+>![O4](./Resources/Pics/mat-cpu.jpg)
 
 GPU variant: *(Uses Hardware Buffers)*
 >Compute time: ~250ms  
->Total time:   ~4.6s
+>Total time:   ~4.6s  
+>Output:  
+>![O5](./Resources/Pics/mat-gpu.jpg)
 
 To see real benefits, the operation needs to be math-heavy and
 you need to queue up a ton of work!
